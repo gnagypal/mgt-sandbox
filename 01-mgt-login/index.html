@@ -2,35 +2,34 @@
 
 <html>
   <head>
-    <script src="https://unpkg.com/@microsoft/mgt/dist/bundle/mgt-loader.js"></script>
-  </head>
-  <body>
-    <title>Using the mgt-login component</title>
-    <mgt-msal2-provider
-      client-id="%YOUR_CLIENT_ID%"
-      scopes="User.Read"
-      login-type="popup">
-    </mgt-msal2-provider>
+    <script type="module">
+      // This example uses the ES6 modules, the MSAL2 Provider initialized in HTML, and the Login component:
 
-    <mgt-login></mgt-login>
+      import {
+        registerMgtComponents,
+        registerMgtMsal2Provider,
+        Providers, 
+        ProviderState,
+      } from "https://unpkg.com/@microsoft/mgt@4";
 
-    <pre id="userInfo" style="overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;"></pre>
+      registerMgtMsal2Provider();
+      registerMgtComponents();
 
-    <script>
       /**
        * Loads the current user from a custom request to Microsoft Graph and assigns its value to the userInfo <pre> DOM element
        */
-      const loadCurrentUser = () => {
-        if (mgt.Providers.globalProvider.state === mgt.ProviderState.SignedIn) {
-          let graphClient = mgt.Providers.globalProvider.graph.client;
+        const loadCurrentUser = () => {
+        if (Providers.globalProvider.state === ProviderState.SignedIn) {
+          let graphClient = Providers.globalProvider.graph.client;
           graphClient.api(`/me`).get().then((result) => {
+            console.log(result);
             document.getElementById('userInfo').innerHTML = JSON.stringify(result);
           });          
         }
       }
 
       // When the provider status changes (the user was properly signed in), we fire the loadCurrentUser method
-      mgt.Providers.onProviderUpdated(loadCurrentUser);
+      Providers.onProviderUpdated(loadCurrentUser);
 
       // Event listener when the login flow is initiated
       document.querySelector('mgt-login').addEventListener('loginInitiated', e => {
@@ -40,7 +39,24 @@
       // Event listener when the login flow is completed
       document.querySelector('mgt-login').addEventListener('loginCompleted', e => {
         console.log(`Event: loginCompleted at ${new Date().toLocaleString()}`);
-      });
-    </script>
+      });      
+
+    </script>  
+  </head>
+  <body>
+    <title>Using the mgt-login component</title>
+
+    <mgt-msal2-provider
+      client-id="%YOUR_CLIENT_ID%"
+      scopes="User.Read"
+      login-type="popup">
+    </mgt-msal2-provider>
+
+    <mgt-login></mgt-login>
+
+    <pre id="userInfo" style="overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;">
+      
+    </pre>
+
   </body>
 </html>
