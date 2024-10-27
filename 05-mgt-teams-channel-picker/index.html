@@ -2,8 +2,71 @@
 
 <html>
   <head>
-    <script src="https://unpkg.com/@microsoft/mgt@next/dist/bundle/mgt-loader.js"></script>
-    <script type="module" src="https://unpkg.com/@fluentui/web-components"></script>
+   
+    <script type="module">
+
+      import {
+        registerMgtComponents,
+        registerMgtMsal2Provider,
+        Providers, 
+        ProviderState,
+        CacheService
+      } from "https://unpkg.com/@microsoft/mgt@4";
+
+      registerMgtMsal2Provider();
+      registerMgtComponents();
+
+      // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
+      Providers.onProviderUpdated(() => {
+        if (Providers.globalProvider.state === ProviderState.SignedIn) {
+          console.log("onProviderUpdated()");
+          document.getElementById("isSignedIn").style.display = "grid";
+          document.getElementById("isNotSignedIn").style.display = "none";
+        }
+      });
+
+      document.querySelector('#teamPicker').addEventListener('selectionChanged', e => {
+        console.log("#teamPicker.selectionChanged()");
+       if (typeof e.detail === 'object' && e.detail !== null) {
+          document.getElementById("teamGroupId").groupId = e.detail.team.id;
+          document.getElementById("teamMembers").style.display = "grid";
+        } else {
+          document.getElementById("teamMembers").style.display = "none";
+        }
+      });
+
+      document.querySelector('#sendMessagePicker').addEventListener('selectionChanged', e => {
+        console.log("#sendMessagePicker.selectionChanged()");
+        if (typeof e.detail === 'object' && e.detail !== null) {
+          document.getElementById("sendMessage").style.display = "grid";
+        } else {
+          document.getElementById("sendMessage").style.display = "none";
+        }
+      });
+      
+      document.querySelector('#sendMessageButton').addEventListener('click', _ => {
+        console.log("#sendMessageButton.click()");
+        debugger;
+        var selectedItem = document.getElementById("sendMessagePicker").selectedItem;
+        
+        if (Providers.globalProvider.state === ProviderState.SignedIn) {
+          let graphClient = Providers.globalProvider.graph.client;
+          graphClient
+            .api(`/teams/${selectedItem.team.id}/channels/${selectedItem.channel.id}/messages`)
+            .post({
+                "body": {
+                  "content": document.getElementById("sendMessageText").value
+                }
+            })
+            .then((result) => {    
+              alert("Message sent!")                 ;
+            });
+        }
+      });
+    
+    </script>
+
+    <script type="module" src="https://unpkg.com/@fluentui/web-components"></script>    
 
     <style>
       #isSignedIn {
@@ -64,7 +127,7 @@
 
       <div class="example">
         <div class="title">
-          Teams Channel picker for sending a Teams message
+          Teams Channel picker for sending a Teams messagessssssssssssssssss
         </div>
         <mgt-teams-channel-picker id="sendMessagePicker"></mgt-teams-channel-picker>
         <div id="sendMessage">
@@ -93,50 +156,5 @@
       It seems you are not connected. Please sign in using the mgt-login
       component!
     </div>
-
-    <script>
-      // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
-      mgt.Providers.onProviderUpdated(() => {
-        if (mgt.Providers.globalProvider.state === mgt.ProviderState.SignedIn) {
-          document.getElementById("isSignedIn").style.display = "grid";
-          document.getElementById("isNotSignedIn").style.display = "none";
-        }
-      });
-
-      document.querySelector('#teamPicker').addEventListener('selectionChanged', e => {
-        if (e.detail.length > 0) {
-          document.getElementById("teamGroupId").groupId = e.detail[0].team.id;
-          document.getElementById("teamMembers").style.display = "grid";
-        } else {
-          document.getElementById("teamMembers").style.display = "none";
-        }
-      });
-
-      document.querySelector('#sendMessagePicker').addEventListener('selectionChanged', e => {
-        if (e.detail.length > 0) {
-          document.getElementById("sendMessage").style.display = "grid";
-        } else {
-          document.getElementById("sendMessage").style.display = "none";
-        }
-      });
-      
-      document.querySelector('#sendMessageButton').addEventListener('click', _ => {
-        var selectedItem = document.getElementById("sendMessagePicker").selectedItem;
-        
-        if (mgt.Providers.globalProvider.state === mgt.ProviderState.SignedIn) {
-          let graphClient = mgt.Providers.globalProvider.graph.client;
-          graphClient
-            .api(`/teams/${selectedItem.team.id}/channels/${selectedItem.channel.id}/messages`)
-            .post({
-                "body": {
-                  "content": document.getElementById("sendMessageText").value
-                }
-            })
-            .then((result) => {    
-              alert("Message sent!")                 ;
-            });
-        }
-      });
-    </script>
   </body>
 </html>

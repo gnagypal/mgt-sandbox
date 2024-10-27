@@ -2,7 +2,51 @@
 
 <html>
   <head>
-    <script src="https://unpkg.com/@microsoft/mgt@next/dist/bundle/mgt-loader.js"></script>
+    <script type="module">
+      // This example uses the ES6 modules, the MSAL2 Provider initialized in HTML, and the Login component:
+
+      import {
+        registerMgtComponents,
+        registerMgtMsal2Provider,
+        Providers, 
+        ProviderState,
+        CacheService
+      } from "https://unpkg.com/@microsoft/mgt@4";
+
+      registerMgtMsal2Provider();
+      registerMgtComponents();
+
+      /**
+       * Loads the current user's manager from a custom request to Microsoft Graph and assigns its value to the person component
+       */
+       const loadManager = () => {
+        if (Providers.globalProvider.state === ProviderState.SignedIn) {
+          let graphClient = Providers.globalProvider.graph.client;
+          graphClient
+            .api(`/me/manager`)
+            .get()
+            .then((result) => {   
+              graphClient
+                .api(`/users/${result.id}/directReports`)
+                .get()
+                .then((directReports) => {
+                  document.getElementById("people-manager").people = directReports.value;
+                });          
+            });
+        }
+      };
+      // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
+      Providers.onProviderUpdated(() => {
+        if (Providers.globalProvider.state === ProviderState.SignedIn) {
+          document.getElementById("isSignedIn").style.display = "grid";
+          document.getElementById("isNotSignedIn").style.display = "none";
+        
+          loadManager();
+        }
+      });
+    
+    </script>
+
     <style>
       #isSignedIn {
         display: none;
@@ -45,14 +89,14 @@
         <div class="title">
           Simple people component for users from a specific group
         </div>
-        <mgt-people group-id="%GOUP_ID%" show-max="10"></mgt-people>
+        <mgt-people group-id="fea7aed7-525e-47c3-8428-83a4244501a8" show-max="10"></mgt-people>
       </div>
 
       <div class="example">
         <div class="title">
           Simple people component for users based on an array of ids
         </div>
-        <mgt-people user-ids="%USER_ID%,%USER_ID%"></mgt-people>
+        <mgt-people user-ids="84e7c039-348e-4346-915e-abb9c6156342,06bec6f3-82d8-4d2a-8716-363ae15d3a57"></mgt-people>
       </div>
       
       <div class="example">
@@ -105,8 +149,8 @@
           <template>
             <ul><li data-for="person in people">
               <mgt-person person-query="{{ person.userPrincipalName }}"></mgt-person>
-              <h3 data-if="person.displayName == 'Megan Bowen'">
-                Look! It's Megan!
+              <h3 data-if="person.displayName == 'Lee Gu'">
+                Look! It's Leeeeeee!
               </h3>
               <h3 data-else>
                 {{person.displayName}}
@@ -123,36 +167,6 @@
       It seems you are not connected. Please sign in using the mgt-login
       component!
     </div>
-
-    <script>
-      /**
-       * Loads the current user's manager from a custom request to Microsoft Graph and assigns its value to the person component
-       */
-       const loadManager = () => {
-        if (mgt.Providers.globalProvider.state === mgt.ProviderState.SignedIn) {
-          let graphClient = mgt.Providers.globalProvider.graph.client;
-          graphClient
-            .api(`/me/manager`)
-            .get()
-            .then((result) => {   
-              graphClient
-                .api(`/users/${result.id}/directReports`)
-                .get()
-                .then((directReports) => {
-                  document.getElementById("people-manager").people = directReports.value;
-                });          
-            });
-        }
-      };
-      // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
-      mgt.Providers.onProviderUpdated(() => {
-        if (mgt.Providers.globalProvider.state === mgt.ProviderState.SignedIn) {
-          document.getElementById("isSignedIn").style.display = "grid";
-          document.getElementById("isNotSignedIn").style.display = "none";
-        
-          loadManager();
-        }
-      });
-    </script>
+    
   </body>
 </html>

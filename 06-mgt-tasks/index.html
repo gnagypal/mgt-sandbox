@@ -2,7 +2,82 @@
 
 <html>
   <head>
-    <script src="https://unpkg.com/@microsoft/mgt@next/dist/bundle/mgt-loader.js"></script>
+    <script type="module">
+
+      import {
+        registerMgtComponents,
+        registerMgtMsal2Provider,
+        Providers, 
+        ProviderState,
+        CacheService
+      } from "https://unpkg.com/@microsoft/mgt@4";
+
+      registerMgtMsal2Provider();
+      registerMgtComponents();
+
+      // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
+      Providers.onProviderUpdated(() => {
+        if (Providers.globalProvider.state === ProviderState.SignedIn) {
+          document.getElementById("isSignedIn").style.display = "grid";
+          document.getElementById("isNotSignedIn").style.display = "none";
+        }
+      });
+
+      document.querySelector('#mgt-agenda-custom-template').templateContext = {
+          dayFromDateTime: dateTimeString => {
+              let date = new Date(dateTimeString);
+              date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+              let monthNames = [
+                  'January',
+                  'February',
+                  'March',
+                  'April',
+                  'May',
+                  'June',
+                  'July',
+                  'August',
+                  'September',
+                  'October',
+                  'November',
+                  'December'
+              ];
+
+              let monthIndex = date.getMonth();
+              let day = date.getDate();
+              let year = date.getFullYear();
+
+              return monthNames[monthIndex] + ' ' + day + ' ' + year;
+          },
+
+          timeRangeFromEvent: event => {
+              if (event.isAllDay) {
+                  return 'ALL DAY';
+              }
+
+              let prettyPrintTimeFromDateTime = date => {
+                  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                  let hours = date.getHours();
+                  let minutes = date.getMinutes();
+                  let ampm = hours >= 12 ? 'PM' : 'AM';
+                  hours = hours % 12;
+                  hours = hours ? hours : 12;
+                  let minutesStr = minutes < 10 ? '0' + minutes : minutes;
+                  return hours + ':' + minutesStr + ' ' + ampm;
+              };
+
+              let start = prettyPrintTimeFromDateTime(new Date(event.start.dateTime));
+              let end = prettyPrintTimeFromDateTime(new Date(event.end.dateTime));
+
+              return start + ' - ' + end;
+          }
+      };
+
+      let taskView = document.querySelector('#specific-category');
+      taskView.taskFilter = (task) => { 
+        return task.appliedCategories.category3 === true;
+      }      
+
+    </script>
     <script type="module" src="https://unpkg.com/@fluentui/web-components"></script>
 
     <style>
@@ -150,7 +225,7 @@
   <body>
     <title>Using the mgt tasks components (Agenda, To Do and Planner)</title>
     <mgt-msal2-provider      
-      client-id="%YOUR_CLIENT_ID%"
+	  client-id="%YOUR_CLIENT_ID%"
       scopes="Calendars.Read, Calendars.Read.Shared, Group.ReadWrite.All, Tasks.ReadWrite"
       login-type="popup"
     >
@@ -175,17 +250,17 @@
             <div class="title">
               Simple agenda component with a cutom query for the currently signed in user
             </div>
-            <mgt-agenda event-query="/me/events?orderby=start/dateTime"></mgt-agenda>
+            <mgt-agenda event-query="/me/events"></mgt-agenda>
           </div>
 
-          
+        <!--
           <div class="example">
             <div class="title">
               Simple agenda component with a shared calendar for the currently signed in user
             </div>
             <mgt-agenda event-query="/users/7a11c66f-3bdc-4330-8c6a-05c4ee3aaa62/events?orderby=start/dateTime"></mgt-agenda>
           </div>
-          
+        -->          
           
           <div class="example">
             <div class="title">
@@ -200,7 +275,6 @@
             </div>
             <mgt-agenda show-max="4"></mgt-agenda>
           </div>
-
           
           <div class="example">
             <div class="title">
@@ -325,14 +399,14 @@
             <div class="title">
               Simple To Do component for a specific task list
             </div>
-            <mgt-todo target-id="AAMkADhmNDAxZGNmLTkwNDEtNDE5NC04MTZhLTY1NTA2YzJjYTEwOAAuAAAAAACpDVhdWqhJRJTElCtzbwWQAQAQO0V8JjzARaitvF64UU5PAAAdylTHAAA="></mgt-todo>
+            <mgt-todo target-id="AAMkADQxMjI4MWQzLWRmN2QtNDQ2Zi1iM2ViLTkyOTM0YWM2ZjA5YwAuAAAAAACoGYZUvTmlTZl32Z5EkQdmAQCOKOYWt3uPQoQN6xqAHICMAAE-8wggAAA="></mgt-todo>
           </div>
 
           <div class="example">
             <div class="title">
               Simple To Do component with all available options
             </div>
-            <mgt-todo read-only="true" hide-header="true" initial-id="AAMkADhmNDAxZGNmLTkwNDEtNDE5NC04MTZhLTY1NTA2YzJjYTEwOAAuAAAAAACpDVhdWqhJRJTElCtzbwWQAQAQO0V8JjzARaitvF64UU5PAAAdylTHAAA="></mgt-todo>
+            <mgt-todo read-only="true" hide-header="true" initial-id="AAMkADQxMjI4MWQzLWRmN2QtNDQ2Zi1iM2ViLTkyOTM0YWM2ZjA5YwAuAAAAAACoGYZUvTmlTZl32Z5EkQdmAQCOKOYWt3uPQoQN6xqAHICMAAE-8wggAAA="></mgt-todo>
           </div>
 
           <div class="example">
@@ -358,69 +432,6 @@
       It seems you are not connected. Please sign in using the mgt-login
       component!
     </div>
-
-    <script>
-      // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
-      mgt.Providers.onProviderUpdated(() => {
-        if (mgt.Providers.globalProvider.state === mgt.ProviderState.SignedIn) {
-          document.getElementById("isSignedIn").style.display = "grid";
-          document.getElementById("isNotSignedIn").style.display = "none";
-        }
-      });
-
-      document.querySelector('#mgt-agenda-custom-template').templateContext = {
-          dayFromDateTime: dateTimeString => {
-              let date = new Date(dateTimeString);
-              date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-              let monthNames = [
-                  'January',
-                  'February',
-                  'March',
-                  'April',
-                  'May',
-                  'June',
-                  'July',
-                  'August',
-                  'September',
-                  'October',
-                  'November',
-                  'December'
-              ];
-
-              let monthIndex = date.getMonth();
-              let day = date.getDate();
-              let year = date.getFullYear();
-
-              return monthNames[monthIndex] + ' ' + day + ' ' + year;
-          },
-
-          timeRangeFromEvent: event => {
-              if (event.isAllDay) {
-                  return 'ALL DAY';
-              }
-
-              let prettyPrintTimeFromDateTime = date => {
-                  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-                  let hours = date.getHours();
-                  let minutes = date.getMinutes();
-                  let ampm = hours >= 12 ? 'PM' : 'AM';
-                  hours = hours % 12;
-                  hours = hours ? hours : 12;
-                  let minutesStr = minutes < 10 ? '0' + minutes : minutes;
-                  return hours + ':' + minutesStr + ' ' + ampm;
-              };
-
-              let start = prettyPrintTimeFromDateTime(new Date(event.start.dateTime));
-              let end = prettyPrintTimeFromDateTime(new Date(event.end.dateTime));
-
-              return start + ' - ' + end;
-          }
-      };
-
-      let taskView = document.querySelector('#specific-category');
-      taskView.taskFilter = (task) => { 
-        return task.appliedCategories.category3 === true;
-      }
-    </script>
+   
   </body>
 </html>

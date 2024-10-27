@@ -2,7 +2,53 @@
 
 <html>
   <head>
-    <script src="https://unpkg.com/@microsoft/mgt@next/dist/bundle/mgt-loader.js"></script>
+    <script type="module">
+      // This example uses the ES6 modules, the MSAL2 Provider initialized in HTML, and the Login component:
+
+      import {
+        registerMgtComponents,
+        registerMgtMsal2Provider,
+        Providers, 
+        ProviderState,
+        CacheService
+      } from "https://unpkg.com/@microsoft/mgt@4";
+
+      registerMgtMsal2Provider();
+      registerMgtComponents();
+
+       /**
+       * Loads the current user's manager from a custom request to Microsoft Graph and assigns its value to the person component
+       */
+       const loadDirectReports = () => {
+        if (Providers.globalProvider.state === ProviderState.SignedIn) {
+          let graphClient = Providers.globalProvider.graph.client;
+          graphClient
+            .api(`/me/directReports`)
+            .get()
+            .then((result) => {    
+              document.getElementById('defaultSelection').selectedPeople = result.value;                 
+            });
+        }
+      };
+
+      // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
+      Providers.onProviderUpdated(() => {
+        if (Providers.globalProvider.state === ProviderState.SignedIn) {
+          document.getElementById("isSignedIn").style.display = "grid";
+          document.getElementById("isNotSignedIn").style.display = "none";
+
+          loadDirectReports();
+        }
+      });
+
+      document.getElementById('selectionChanged').addEventListener('selectionChanged', e => {
+        console.log("selectionChanged()", e.detail);
+        document.getElementById('selectionShowcase').people = e.detail;
+        document.getElementById("selectionShowcase").style.display = "grid";
+      });
+
+    </script>
+
     <style>
       #isSignedIn {
         display: none;
@@ -27,8 +73,7 @@
     <mgt-msal2-provider      
       client-id="%YOUR_CLIENT_ID%"
       scopes="GroupMember.Read.All, User.ReadBasic.All, User.Read.All, People.Read, Presence.Read.All, Group.Read.All"
-      login-type="popup"
-    >
+      login-type="popup">
     </mgt-msal2-provider>
 
     <mgt-login></mgt-login>
@@ -59,7 +104,7 @@
         <div class="title">
           Simple people picker component for users from a specific group using transitive search
         </div>
-        <mgt-people-picker group-id="a752c905-e950-407b-b9e2-a77e41fe1807" transitive-search="true"></mgt-people-picker>
+        <mgt-people-picker group-id="edb69d70-afe9-4ae0-acad-a441f44ecc16" transitive-search="true"></mgt-people-picker>
       </div>
 
       <div class="example">
@@ -74,14 +119,14 @@
         <div class="title">
           People picker component for default selected user ids
         </div>
-        <mgt-people-picker default-selected-user-ids="80b33b86-214f-4a42-8888-4029bf54a2af,e3a432b4-81a7-4397-8540-b5d2b6d41f36"></mgt-people-picker>
+        <mgt-people-picker default-selected-user-ids="84e7c039-348e-4346-915e-abb9c6156342,06bec6f3-82d8-4d2a-8716-363ae15d3a57"></mgt-people-picker>
       </div>
 
       <div class="example">
         <div class="title">
           People picker component for default selected group ids
         </div>
-        <mgt-people-picker type="group" default-selected-group-ids="7210d6be-2d66-4977-a59c-844d150c0d97,a363e472-4773-4839-aa58-6303f6aee3d5"></mgt-people-picker>
+        <mgt-people-picker type="group" default-selected-group-ids="edb69d70-afe9-4ae0-acad-a441f44ecc16,fea7aed7-525e-47c3-8428-83a4244501a8"></mgt-people-picker>
       </div>
 
       <div class="example">
@@ -104,36 +149,5 @@
       component!
     </div>
 
-    <script>
-       /**
-       * Loads the current user's manager from a custom request to Microsoft Graph and assigns its value to the person component
-       */
-       const loadDirectReports = () => {
-        if (mgt.Providers.globalProvider.state === mgt.ProviderState.SignedIn) {
-          let graphClient = mgt.Providers.globalProvider.graph.client;
-          graphClient
-            .api(`/me/directReports`)
-            .get()
-            .then((result) => {    
-              document.getElementById('defaultSelection').selectedPeople = result.value;                 
-            });
-        }
-      };
-
-      // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
-      mgt.Providers.onProviderUpdated(() => {
-        if (mgt.Providers.globalProvider.state === mgt.ProviderState.SignedIn) {
-          document.getElementById("isSignedIn").style.display = "grid";
-          document.getElementById("isNotSignedIn").style.display = "none";
-
-          loadDirectReports();
-        }
-      });
-
-      document.getElementById('selectionChanged').addEventListener('selectionChanged', e => {
-        document.getElementById('selectionShowcase').people = e.detail;
-        document.getElementById("selectionShowcase").style.display = "grid";
-      });
-    </script>
   </body>
 </html>

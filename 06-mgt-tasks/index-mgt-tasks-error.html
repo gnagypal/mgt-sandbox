@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="module">
+      import {
+        registerMgtComponents,
+        registerMgtMsal2Provider
+      } from "https://unpkg.com/@microsoft/mgt@4";
+
+      registerMgtMsal2Provider();
+      registerMgtComponents();
+    </script>
+  </head>
+  <body>
+    <title>Using the mgt tasks components (Agenda, To Do and Planner)</title>
+    <h2>mgt-msal2-provider</h2>
+    <mgt-msal2-provider      
+    client-id="%YOUR_CLIENT_ID%"
+      scopes="Calendars.Read, Calendars.Read.Shared, Group.ReadWrite.All, Tasks.ReadWrite, Tasks.Read, User.ReadWrite"
+      login-type="popup">
+    </mgt-msal2-provider>
+
+    <h2>mgt-login</h2>
+    <mgt-login></mgt-login>
+    <h2>mgt-tasks - it's silent and it does not appear</h2>
+    <mgt-tasks></mgt-tasks>
+    <h2>mgt-todo</h2>
+    <mgt-todo></mgt-todo>
+  </body>
+</html>

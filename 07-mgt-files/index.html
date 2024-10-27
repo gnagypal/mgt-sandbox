@@ -2,229 +2,22 @@
 
 <html>
   <head>
-    <script src="https://unpkg.com/@microsoft/mgt@next/dist/bundle/mgt-loader.js"></script>
-    <script type="module" src="https://unpkg.com/@fluentui/web-components"></script>
+    <script type="module">
 
-<style>
-      #isSignedIn {
-        display: none;
-      }
-      
-      .example {
-        font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI",
-          -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue",
-          sans-serif;
-        margin-bottom: 8px;
-      }
+      import {
+        registerMgtComponents,
+        registerMgtMsal2Provider,
+        Providers, 
+        ProviderState,
+        CacheService
+      } from "https://unpkg.com/@microsoft/mgt@4";
 
-      .example .title {
-        border-bottom: 1px solid #8a8886;
-        margin-bottom: 8px;
-        width: fit-content;
-      }
+      registerMgtMsal2Provider();
+      registerMgtComponents();
 
-      .breadcrumb {
-        margin: 0;
-        padding: 10px 16px;
-        list-style: none;
-        background-color: #eee;
-        font-size: 12px;
-        width: 100%;
-      }
-
-      .breadcrumb fluent-breadcrumb-item {
-        color: #0275d8;
-        text-decoration: none;
-        cursor: pointer;
-      }
-
-      .breadcrumb fluent-breadcrumb-item a:hover {
-        color: #01447e;
-        text-decoration: underline;
-      }
-    </style>
-  </head>
-  <body>
-    <title>Using the mgt tasks components (Agenda, To Do and Planner)</title>
-    <mgt-msal2-provider      
-      client-id="%YOUR_CLIENT_ID%"
-      scopes="Files.Read, Files.ReadWrite, Files.Read.All, Sites.Read.All"
-      login-type="popup"
-    >
-    </mgt-msal2-provider>
-
-    <mgt-login></mgt-login>
-
-    <div id="isSignedIn">   
-      <fluent-tabs id="myTab" activeId="TabTwo" orientation="horizontal">
-        <fluent-tab id="mgt-file">File</fluent-tab>
-        <fluent-tab id="mgt-file-list">File List</fluent-tab>
-        <fluent-tab-panel id="mgt-file-panel">
-          <fluent-accordion>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file component</span>
-              <mgt-file file-query="/me/drive/items/01FWCE3UMWBBDST3Y4BZA3PMGWYLYHFJGL"></mgt-file>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file components with multiple layouts</span>
-              <mgt-file 
-                file-query="/me/drive/items/01FWCE3UMWBBDST3Y4BZA3PMGWYLYHFJGL" 
-                view="oneline">
-              </mgt-file> 
-              <mgt-file 
-                file-query="/me/drive/items/01FWCE3UMWBBDST3Y4BZA3PMGWYLYHFJGL" 
-                view="twolines">
-              </mgt-file>
-              <mgt-file 
-                file-query="/me/drive/items/01FWCE3UMWBBDST3Y4BZA3PMGWYLYHFJGL" 
-                view="threelines">
-              </mgt-file>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file component with a custom file icon</span>
-              <mgt-file 
-                file-query="/me/drive/items/01FWCE3UMWBBDST3Y4BZA3PMGWYLYHFJGL" 
-                file-icon="https://github.com/microsoftgraph/microsoft-graph-toolkit/blob/main/assets/favicon.png?raw=true">
-              </mgt-file>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file components with a specific drive-id and item</span>
-              <mgt-file 
-                drive-id="b!fQDAIw1OQkeWzyQKgRDdpqWuBQw7imFDuUpMIzcwzw9lPpAblrXOR6nQ7BCTsqES"
-                item-id="01FWCE3UNZHIYLGCXTCNHZCKHY5Y4JQMH5">
-              </mgt-file>
-              <mgt-file 
-                drive-id="b!fQDAIw1OQkeWzyQKgRDdpqWuBQw7imFDuUpMIzcwzw9lPpAblrXOR6nQ7BCTsqES" 
-                item-path="Mockups">
-              </mgt-file>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file components with a specific group-id and item</span>
-              <mgt-file 
-                group-id="5ffdc9d8-2e92-49a9-a0ed-b2305c4f7756" 
-                item-id="01PKMSUYOI75ZVKLURUJFYTOYQ7WHTQDJC">
-              </mgt-file>
-              <mgt-file 
-                group-id="5ffdc9d8-2e92-49a9-a0ed-b2305c4f7756" 
-                item-path="General/Ad Slogans.docx">
-              </mgt-file>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file components with a specific site-id and item</span>
-              <mgt-file 
-                site-id="m365x55726300.sharepoint.com,a306edc7-988e-4b47-9a11-f3d4bbbaacb8,6be9dd5c-0640-4465-b955-1528279a0227"
-                item-id="01VYAUOWDWMMJRCDMQQVHKSQZHWFVJTI73">
-              </mgt-file>
-              <mgt-file 
-                site-id="m365x55726300.sharepoint.com,a306edc7-988e-4b47-9a11-f3d4bbbaacb8,6be9dd5c-0640-4465-b955-1528279a0227"
-                item-path="Inventory.xlsx">
-              </mgt-file>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file components with a specific user-id and item</span>
-              <mgt-person user-id="7a11c66f-3bdc-4330-8c6a-05c4ee3aaa62" view="threeLines"></mgt-person>
-              <mgt-file 
-                user-id="7a11c66f-3bdc-4330-8c6a-05c4ee3aaa62" 
-                item-id="017LYTWADM6PN55NQ625BK6XPNSCVLNISK">
-              </mgt-file>
-              <mgt-file 
-                user-id="7a11c66f-3bdc-4330-8c6a-05c4ee3aaa62" 
-                item-path="BrokenPipe.jpg">
-              </mgt-file>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file components with customizing the line properties</span>
-              <mgt-file 
-                file-query="/me/drive/items/01FWCE3UMWBBDST3Y4BZA3PMGWYLYHFJGL" 
-                line1-property="lastModifiedDateTime"
-                line2-property="size" 
-                line3-property="name">
-              </mgt-file>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file components with custom provided file details</span>
-              <mgt-file
-                id="custom-file-details" 
-                line1-property="name"
-                line2-property="size"
-                view="twoLines">
-              </mgt-file>
-            </fluent-accordion-item>
-          </fluent-accordion>      
-        </fluent-tab-panel>
-        <fluent-tab-panel id="mgt-file-list-panel">
-          <fluent-accordion>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file list component</span>
-              <mgt-file-list></mgt-file-list>
-            </fluent-accordion-item>            
-            <fluent-accordion-item>
-              <span slot="heading">Simple file list component with search</span>
-              <mgt-file-list file-list-query="/me/drive/root/search(q='Employee')"></mgt-file-list>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file list component with upload</span>
-              <mgt-file-list enable-file-upload="true"></mgt-file-list>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file list component with a query</span>
-              <mgt-file-list 
-                file-list-query="/me/drive/items/01FWCE3UKADXCOMY5JXRAJLGDDQFDYD6D2/children">
-              </mgt-file-list>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file list component with multiple queries</span>
-              <mgt-file-list
-                file-queries="/me/drive/items/01FWCE3UKADXCOMY5JXRAJLGDDQFDYD6D2,/me/drive/items/01FWCE3UNZHIYLGCXTCNHZCKHY5Y4JQMH5,/me/drive/items/01FWCE3UN7MWTBBCUT3NFYBXNCMRRPXLKD">
-              </mgt-file-list>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file list component with specific group-id and item</span>
-              <mgt-file-list 
-                group-id="5ffdc9d8-2e92-49a9-a0ed-b2305c4f7756" 
-                item-path="/General">
-              </mgt-file-list>
-            </fluent-accordion-item>
-            <fluent-accordion-item>
-              <span slot="heading">Simple file list component with insight type</span>
-              <mgt-file-list insight-type="used"></mgt-file-list>
-            </fluent-accordion-item>            
-            <fluent-accordion-item>
-              <span slot="heading">Simple file list component with filtered extensions</span>
-              <mgt-file-list file-extensions="docx, xlsx"></mgt-file-list>
-            </fluent-accordion-item>       
-            <fluent-accordion-item>
-              <span slot="heading">Simple file list component with customized views</span>
-              <mgt-file-list item-view="oneLine" page-size=3></mgt-file-list>
-              <mgt-file-list item-view="twoLines" page-size=3></mgt-file-list>
-              <mgt-file-list item-view="threeLines" page-size=3></mgt-file-list>
-            </fluent-accordion-item>       
-            <fluent-accordion-item>
-              <span slot="heading">Simple file list component with breadcrumb management</span>
-              <fluent-breadcrumb id="nav" class="breadcrumb">
-                <fluent-breadcrumb-item id="home">Files</fluent-breadcrumb-item>
-              </fluent-breadcrumb>
-              <mgt-file-list id="mgt-file-list-breadcrumb">
-                <template data-type="no-data">
-                  Sorry, no files are available in this folder!
-                </template>
-              </mgt-file-list>
-            </fluent-accordion-item>
-          </fluent-accordion>
-        </fluent-tab-panel>
-      </fluent-tabs>   
-      
-    </div>
-
-    <div id="isNotSignedIn">
-      It seems you are not connected. Please sign in using the mgt-login
-      component!
-    </div>
-
-    <script>
       // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
-      mgt.Providers.onProviderUpdated(() => {
-        if (mgt.Providers.globalProvider.state === mgt.ProviderState.SignedIn) {
+      Providers.onProviderUpdated(() => {
+        if (Providers.globalProvider.state === ProviderState.SignedIn) {
           document.getElementById("isSignedIn").style.display = "grid";
           document.getElementById("isNotSignedIn").style.display = "none";
         }
@@ -290,6 +83,230 @@
               nav.removeChild(nav.lastChild);
           }
       }
+
     </script>
+
+    <script type="module" src="https://unpkg.com/@fluentui/web-components"></script>
+
+<style>
+      #isSignedIn {
+        display: none;
+      }
+      
+      .example {
+        font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI",
+          -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue",
+          sans-serif;
+        margin-bottom: 8px;
+      }
+
+      .example .title {
+        border-bottom: 1px solid #8a8886;
+        margin-bottom: 8px;
+        width: fit-content;
+      }
+
+      .breadcrumb {
+        margin: 0;
+        padding: 10px 16px;
+        list-style: none;
+        background-color: #eee;
+        font-size: 12px;
+        width: 100%;
+      }
+
+      .breadcrumb fluent-breadcrumb-item {
+        color: #0275d8;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .breadcrumb fluent-breadcrumb-item a:hover {
+        color: #01447e;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <title>Using the mgt tasks components (Agenda, To Do and Planner)</title>
+    <mgt-msal2-provider      
+      client-id="%YOUR_CLIENT_ID%"
+      scopes="Files.Read, Files.ReadWrite, Files.Read.All, Sites.Read.All"
+      login-type="popup"
+    >
+    </mgt-msal2-provider>
+
+    <mgt-login></mgt-login>
+
+    <div id="isSignedIn">   
+      <fluent-tabs id="myTab" activeId="TabTwo" orientation="horizontal">
+        <fluent-tab id="mgt-file">File</fluent-tab>
+        <fluent-tab id="mgt-file-list">File List</fluent-tab>
+        <fluent-tab-panel id="mgt-file-panel">
+          <fluent-accordion>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file component</span>
+              <mgt-file file-query="/me/drive/items/01VP3DSI4TXU4Z4ZBG3FHJ2ENJMOUYN2MX"></mgt-file>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file components with multiple layouts</span>
+              <mgt-file 
+                file-query="/me/drive/items/01VP3DSI4TXU4Z4ZBG3FHJ2ENJMOUYN2MX" 
+                view="oneline">
+              </mgt-file> 
+              <mgt-file 
+                file-query="/me/drive/items/01VP3DSI4TXU4Z4ZBG3FHJ2ENJMOUYN2MX" 
+                view="twolines">
+              </mgt-file>
+              <mgt-file 
+                file-query="/me/drive/items/01VP3DSI4TXU4Z4ZBG3FHJ2ENJMOUYN2MX" 
+                view="threelines">
+              </mgt-file>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file component with a custom file icon</span>
+              <mgt-file 
+                file-query="/me/drive/items/01VP3DSI4TXU4Z4ZBG3FHJ2ENJMOUYN2MX" 
+                file-icon="https://github.com/microsoftgraph/microsoft-graph-toolkit/blob/main/assets/favicon.png?raw=true">
+              </mgt-file>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <!-- 
+              https://vqh2f.sharepoint.com/sites/Mark8ProjectTeam/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FMark8ProjectTeam%2FShared%20Documents%2FGeneral
+              https://graph.microsoft.com/v1.0/groups/fea7aed7-525e-47c3-8428-83a4244501a8/drive/items/01L33Y4IXD2IMHELZTUJF3OFCYHLG5Z53O/children
+              -->
+              <span slot="heading">Simple file components with a specific drive-id and item</span>
+              <mgt-file 
+                drive-id="b!6xcAcCaU20qCNVAwnCqIX-5cgb3HDjdOg-1K_v0bNGhHCeQvghq-T6Gm7jBb2Zv1"
+                item-id="01L33Y4IWIIYAXVLJBFRDIQGO23K3IZTPW">
+              </mgt-file>
+              <mgt-file 
+                drive-id="b!6xcAcCaU20qCNVAwnCqIX-5cgb3HDjdOg-1K_v0bNGhHCeQvghq-T6Gm7jBb2Zv1" 
+                item-path="General">
+              </mgt-file>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file components with a specific group-id and item</span>
+              <mgt-file 
+                group-id="fea7aed7-525e-47c3-8428-83a4244501a8" 
+                item-id="01L33Y4IWIIYAXVLJBFRDIQGO23K3IZTPW">
+              </mgt-file>
+              <mgt-file 
+                group-id="fea7aed7-525e-47c3-8428-83a4244501a8" 
+                item-path="General">
+              </mgt-file>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file components with a specific site-id and item</span>
+              <mgt-file 
+                site-id="vqh2f.sharepoint.com,700017eb-9426-4adb-8235-50309c2a885f,bd815cee-0ec7-4e37-83ed-4afefd1b3468"
+                item-id="01L33Y4IWIIYAXVLJBFRDIQGO23K3IZTPW">
+              </mgt-file>
+              <mgt-file 
+                site-id="vqh2f.sharepoint.com,700017eb-9426-4adb-8235-50309c2a885f,bd815cee-0ec7-4e37-83ed-4afefd1b3468"
+                item-path="General">
+              </mgt-file>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file components with a specific user-id and item</span>
+              <mgt-person user-id="f7cddeec-0ffd-4184-a0c0-33928f655d4b" view="threeLines"></mgt-person>
+              <mgt-file 
+                user-id="f7cddeec-0ffd-4184-a0c0-33928f655d4b" 
+                item-id="01X7GOKPQUMHYRFSBXPRAYLCBSEOWVFUA5">
+              </mgt-file>
+              <mgt-file 
+                user-id="f7cddeec-0ffd-4184-a0c0-33928f655d4b" 
+                item-path="Power BI/ConnectwithCustomers-SalesGuide.pptx">
+              </mgt-file>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file components with customizing the line properties</span>
+              <mgt-file 
+                file-query="/me/drive/items/01VP3DSI4TXU4Z4ZBG3FHJ2ENJMOUYN2MX" 
+                line1-property="lastModifiedDateTime"
+                line2-property="size" 
+                line3-property="name">
+              </mgt-file>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file components with custom provided file details</span>
+              <mgt-file
+                id="custom-file-details" 
+                line1-property="name"
+                line2-property="size"
+                view="twoLines">
+              </mgt-file>
+            </fluent-accordion-item>
+          </fluent-accordion>      
+        </fluent-tab-panel>
+        <fluent-tab-panel id="mgt-file-list-panel">
+          <fluent-accordion>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file list component</span>
+              <mgt-file-list></mgt-file-list>
+            </fluent-accordion-item>            
+            <fluent-accordion-item>
+              <span slot="heading">Simple file list component with search</span>
+              <mgt-file-list file-list-query="/me/drive/root/search(q='Employee')"></mgt-file-list>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file list component with upload</span>
+              <mgt-file-list enable-file-upload="true"></mgt-file-list>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file list component with a query</span>
+              <mgt-file-list 
+                file-list-query="/me/drive/items/01VP3DSI4PAYB5JFQPUVBJ52C2XEEZ5DHP/children">
+              </mgt-file-list>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file list component with multiple queries</span>
+              <mgt-file-list
+                file-queries="/me/drive/items/01VP3DSI4PAYB5JFQPUVBJ52C2XEEZ5DHP,/me/drive/items/01VP3DSI6M7J7JSYS6ZBCZ2XOJ2H35VWCS">
+              </mgt-file-list>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file list component with specific group-id and item</span>
+              <mgt-file-list 
+                group-id="fea7aed7-525e-47c3-8428-83a4244501a8" 
+                item-path="General">
+              </mgt-file-list>
+            </fluent-accordion-item>
+            <fluent-accordion-item>
+              <span slot="heading">Simple file list component with insight type</span>
+              <mgt-file-list insight-type="used"></mgt-file-list>
+            </fluent-accordion-item>            
+            <fluent-accordion-item>
+              <span slot="heading">Simple file list component with filtered extensions</span>
+              <mgt-file-list file-extensions="pdf"></mgt-file-list>
+            </fluent-accordion-item>       
+            <fluent-accordion-item>
+              <span slot="heading">Simple file list component with customized views</span>
+              <mgt-file-list item-view="oneLine" page-size=3></mgt-file-list>
+              <mgt-file-list item-view="twoLines" page-size=3></mgt-file-list>
+              <mgt-file-list item-view="threeLines" page-size=3></mgt-file-list>
+            </fluent-accordion-item>       
+            <fluent-accordion-item>
+              <span slot="heading">Simple file list component with breadcrumb management</span>
+              <fluent-breadcrumb id="nav" class="breadcrumb">
+                <fluent-breadcrumb-item id="home">Files</fluent-breadcrumb-item>
+              </fluent-breadcrumb>
+              <mgt-file-list id="mgt-file-list-breadcrumb">
+                <template data-type="no-data">
+                  Sorry, no files are available in this folder!
+                </template>
+              </mgt-file-list>
+            </fluent-accordion-item>
+          </fluent-accordion>
+        </fluent-tab-panel>
+      </fluent-tabs>   
+      
+    </div>
+
+    <div id="isNotSignedIn">
+      It seems you are not connected. Please sign in using the mgt-login
+      component!
+    </div>
+
   </body>
 </html>

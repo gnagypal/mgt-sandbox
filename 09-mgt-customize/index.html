@@ -2,7 +2,76 @@
 
 <html>
   <head>
-    <script src="https://unpkg.com/@microsoft/mgt@next/dist/bundle/mgt-loader.js"></script>
+    <script type="module">
+      import {
+        registerMgtComponents,
+        registerMgtMsal2Provider,
+        LocalizationHelper,
+        Providers, 
+        ProviderState,
+        CacheService
+      } from "https://unpkg.com/@microsoft/mgt@4";
+
+      // 2
+    /* https://docs.microsoft.com/en-us/graph/toolkit/customize-components/localization */
+      LocalizationHelper.strings = {
+        _components: {
+          'person-card': {
+            sendEmailLinkSubtitle: 'Envoyer un courriel',
+            startChatLinkSubtitle: 'Discuter',
+            showMoreSectionButton: 'Voir plus'
+          },
+          'person-card-contact': {
+            contactSectionTitle: 'Information'
+          },
+          'person-card-organization': {
+            reportsToSectionTitle: 'Gestionnaire',
+            organizationSectionTitle: 'Organigramme',
+            youWorkWithSubSectionTitle: 'Collègues',
+          },
+          'person-card-messages': {
+            emailsSectionTitle: 'Courriels'
+          },
+          'person-card-files': {
+            filesSectionTitle: 'Fichiers',
+            sharedTextSubtitle: 'Partagé'
+          },
+          'person-card-profile': {
+            SkillsAndExperienceSectionTitle: 'Expérience et habiletés',
+            AboutCompactSectionTitle: 'À propos',
+            SkillsSubSectionTitle: 'Habiletés',
+            LanguagesSubSectionTitle: 'Langues',
+            WorkExperienceSubSectionTitle: 'Expérience',
+            EducationSubSectionTitle: 'Éducation',
+            professionalInterestsSubSectionTitle: 'Intérêts professionels',
+            personalInterestsSubSectionTitle: 'Intérêts personnels',
+            birthdaySubSectionTitle: 'Anniversaire',
+            currentYearSubtitle: 'En cours'
+          }
+        }
+      };   
+      
+      // 3
+      /* https://docs.microsoft.com/en-us/graph/toolkit/customize-components/cache */
+      CacheService.config.isEnabled = false;
+      CacheService.config.defaultInvalidationPeriod = 60000;
+      CacheService.config.people.isEnabled = true;
+      CacheService.config.people.invalidationPeriod = 1000;              
+
+      registerMgtMsal2Provider();
+      registerMgtComponents();
+
+      // 1
+      // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
+      Providers.onProviderUpdated(() => {
+        if (Providers.globalProvider.state === ProviderState.SignedIn) {
+          document.getElementById("isSignedIn").style.display = "grid";
+          document.getElementById("isNotSignedIn").style.display = "none";
+        }
+      });
+      
+    </script>
+    
     <script type="module" src="https://unpkg.com/@fluentui/web-components"></script>
 
     <style>
@@ -55,11 +124,6 @@
           <mgt-people></mgt-people>
 
           <script>
-            /* https://docs.microsoft.com/en-us/graph/toolkit/customize-components/cache */
-            //mgt.CacheService.config.isEnabled = false;
-            //mgt.CacheService.config.defaultInvalidationPeriod = 60000;
-            //mgt.CacheService.config.people.isEnabled = true;
-            //mgt.CacheService.config.people.invalidationPeriod = 1000;              
           </script>
         </fluent-tab-panel>
         <fluent-tab-panel id="mgt-caching-panel">
@@ -67,43 +131,7 @@
           <mgt-person person-query="me" person-card="hover"></mgt-person>
 
           <script>
-            /* https://docs.microsoft.com/en-us/graph/toolkit/customize-components/localization */
-            /*mgt.LocalizationHelper.strings = {
-              _components: {
-                'person-card': {
-                  sendEmailLinkSubtitle: 'Envoyer un courriel',
-                  startChatLinkSubtitle: 'Discuter',
-                  showMoreSectionButton: 'Voir plus'
-                },
-                'person-card-contact': {
-                  contactSectionTitle: 'Information'
-                },
-                'person-card-organization': {
-                  reportsToSectionTitle: 'Gestionnaire',
-                  organizationSectionTitle: 'Organigramme',
-                  youWorkWithSubSectionTitle: 'Collègues',
-                },
-                'person-card-messages': {
-                  emailsSectionTitle: 'Courriels'
-                },
-                'person-card-files': {
-                  filesSectionTitle: 'Fichiers',
-                  sharedTextSubtitle: 'Partagé'
-                },
-                'person-card-profile': {
-                  SkillsAndExperienceSectionTitle: 'Expérience et habiletés',
-                  AboutCompactSectionTitle: 'À propos',
-                  SkillsSubSectionTitle: 'Habiletés',
-                  LanguagesSubSectionTitle: 'Langues',
-                  WorkExperienceSubSectionTitle: 'Expérience',
-                  EducationSubSectionTitle: 'Éducation',
-                  professionalInterestsSubSectionTitle: 'Intérêts professionels',
-                  personalInterestsSubSectionTitle: 'Intérêts personnels',
-                  birthdaySubSectionTitle: 'Anniversaire',
-                  currentYearSubtitle: 'En cours'
-                }
-              }
-            };*/       
+  
           </script>
         </fluent-tab-panel>
       </fluent-tabs>   
@@ -147,13 +175,6 @@
       })
     </script>
     <script>
-      // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
-      mgt.Providers.onProviderUpdated(() => {
-        if (mgt.Providers.globalProvider.state === mgt.ProviderState.SignedIn) {
-          document.getElementById("isSignedIn").style.display = "grid";
-          document.getElementById("isNotSignedIn").style.display = "none";
-        }
-      });
     </script>
   </body>
 </html>
