@@ -46,7 +46,7 @@
       
       document.querySelector('#sendMessageButton').addEventListener('click', _ => {
         console.log("#sendMessageButton.click()");
-        debugger;
+
         var selectedItem = document.getElementById("sendMessagePicker").selectedItem;
         
         if (Providers.globalProvider.state === ProviderState.SignedIn) {
@@ -127,7 +127,7 @@
 
       <div class="example">
         <div class="title">
-          Teams Channel picker for sending a Teams messagessssssssssssssssss
+          Teams Channel picker for sending a Teams messages
         </div>
         <mgt-teams-channel-picker id="sendMessagePicker"></mgt-teams-channel-picker>
         <div id="sendMessage">

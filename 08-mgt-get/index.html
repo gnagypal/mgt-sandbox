@@ -16,7 +16,6 @@
       registerMgtComponents();
 
       // 1
-      const provider = Providers.globalProvider;
       let mgtEmail = document.querySelector('#mgt-email');
 
       mgtEmail.templateContext = {
@@ -26,13 +25,15 @@
         },
 
         emailClick: (e, context, root) => {
+          console.log("emailClick");
             window.open(context.email.webLink, '_blank', 'noreferrer');  
             return false;
         },
 
         deleteClick: async (e, context, root) => {
-            if (provider && provider.state === ProviderState.SignedIn) {
-                let graphClient = provider.graph.client;
+            console.log("deleteClick");
+            if (Providers.globalProvider && Providers.globalProvider.state === ProviderState.SignedIn) {
+                let graphClient = Providers.globalProvider.graph.client;
                 await graphClient.api(`/me/messages/${context.email.id}/move`).post({
                     "destinationId": "deleteditems"
                 });
@@ -63,7 +64,7 @@
       // 3
       // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
       Providers.onProviderUpdated(() => {
-        if (Providers.globalProvider.state === ProviderState.SignedIn) {
+        if (Providers.globalProvider && Providers.globalProvider.state === ProviderState.SignedIn) {
           document.getElementById("isSignedIn").style.display = "grid";
           document.getElementById("isNotSignedIn").style.display = "none";
         }

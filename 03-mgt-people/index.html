@@ -5,7 +5,7 @@
     <script type="module">
       // This example uses the ES6 modules, the MSAL2 Provider initialized in HTML, and the Login component:
 
-      import {
+      import {
         registerMgtComponents,
         registerMgtMsal2Provider,
         Providers, 
@@ -17,7 +17,7 @@
       registerMgtComponents();
 
       /**
-       * Loads the current user's manager from a custom request to Microsoft Graph and assigns its value to the person component
+       * Loads the current user's manager from a custom request to Microsoft Graph and assigns its value to the person component
        */
        const loadManager = () => {
         if (Providers.globalProvider.state === ProviderState.SignedIn) {
@@ -108,7 +108,7 @@
 
       <div class="example">
         <div class="title">
-          Simple people component for people trending around the currently signed in user with their presence
+          Simple people component for people trending around the currently signed in user with their <b>presence</b>
         </div>
         <mgt-people show-presence="true"></mgt-people>
       </div>
@@ -134,13 +134,6 @@
         <mgt-people id="people-manager"></mgt-people>
       </div>
 
-      <div class="example">
-        <div class="title">
-          Simple people component for data coming from other sources
-        </div>
-        <mgt-people id="people-manager"></mgt-people>
-      </div>
-      
       <div class="example">
         <div class="title">
           Simple people component with custom template

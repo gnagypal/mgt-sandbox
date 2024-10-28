@@ -19,11 +19,13 @@
       /**
        * Loads the current user's manager from a custom request to Microsoft Graph and assigns its value to the person component
        */
-       const loadManager = () => {
+       const  loadManager = () => {
         if (Providers.globalProvider.state === ProviderState.SignedIn) {
+
           let graphClient = Providers.globalProvider.graph.client;
+
           graphClient
-            .api(`/me/manager`)
+            .api('me/manager')
             .get()
             .then((result) => {
               document.getElementById("manager").userId = result.id;
@@ -41,7 +43,7 @@
         loadManager();
       });
 
-      //document.getElementById("person-details").personDetails =
+      document.getElementById("person-details-from-js").personDetails = {"mail":"Parker@contoso.com","displayName":"Parker the Porcupine", "jobTitle":"PnP Hero"};
 
       // Modifying the presence cache invalidation period to 30 seconds
       CacheService.config.presence.invalidationPeriod = 30000;
@@ -50,11 +52,7 @@
       document
         .querySelector("#custom-events")
         .addEventListener("line1clicked", (e) => {
-          console.log(
-            `Event: line1clicked at ${new Date().toLocaleString()} with content ${JSON.stringify(
-              e.detail
-            )}`
-          );
+          console.log(`Event: line1clicked at ${new Date().toLocaleString()} with content ${JSON.stringify(e.detail)}`);
         });
     
     </script>
@@ -77,7 +75,7 @@
       }
 
       .facepile mgt-person:not(:first-child) {
-        margin-left: -12px;
+        
       }
 
       mgt-person.custom-style {
@@ -116,8 +114,7 @@
     <mgt-msal2-provider
       client-id="%YOUR_CLIENT_ID%"
       scopes="User.Read, User.ReadBasic.All, User.Read.All, Mail.ReadBasic, Sites.Read.All, People.Read.All, People.Read, Contacts.Read, Presence.Read"
-      login-type="popup"
-    >
+      login-type="popup">
     </mgt-msal2-provider>
 
     <mgt-login></mgt-login>
@@ -185,6 +182,14 @@
 
       <div class="example">
         <div class="title">
+          Person component for specified userid
+          view
+        </div>
+        <mgt-person user-Id="07dc843a-1cd9-44b5-9a21-b46b49a6a3c0" view="threelines"></mgt-person>
+      </div>
+
+      <div class="example">
+        <div class="title">
           Person component for currently signed in user with custom line data
         </div>
         <mgt-person
@@ -197,12 +202,20 @@
       </div>
 
       <div class="example">
-        <div class="title">Person component for a user not on Graph</div>
+        <div class="title">Person component for a user not on Graph - inline initialization</div>
         <mgt-person
           view="threeLines"
           fetch-image="false"
           person-details='{"mail":"Parker@contoso.com","displayName":"Parker the Porcupine", "jobTitle":"PnP Hero"}'
           person-image="https://raw.githubusercontent.com/pnp/media/master/parker/pnp/300w/parker.png"
+        ></mgt-person>
+      </div>
+
+      <div class="example">
+        <div class="title">Person component for a user not on Graph  -  initialization from JS</div>
+        <mgt-person id="person-details-from-js"
+          view="threeLines"
+          fetch-image="false"          
         ></mgt-person>
       </div>
 
@@ -257,6 +270,27 @@
           person-query="me"
           view="threelines"
         ></mgt-person>
+      </div>
+
+      <div class="example">
+        <div class="title">
+          Person component with custom events for currently signed in user using
+          the default "threelines" view
+        </div>
+        <mgt-person person-query="me" view="twolines" person-card="hover">
+          <template data-type="person-card">
+            <mgt-person-card inherit-details>
+              <template data-type="additional-details">
+                <h3>Stuffed Animal Friends:</h3>
+                <ul>
+                  <li>Giraffe</li>
+                  <li>lion</li>
+                  <li>Rabbit</li>
+                </ul>
+              </template>
+            </mgt-person-card>
+          </template>
+        </mgt-person>      
       </div>
     </div>
 

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <script type="module">
+      // This example uses the ES6 modules, the MSAL2 Provider initialized in HTML, and the Login component:
+
+      import {
+        registerMgtComponents,
+        registerMgtMsal2Provider,
+        Providers, 
+        ProviderState,
+        CacheService
+      } from "https://unpkg.com/@microsoft/mgt@4";
+
+      registerMgtMsal2Provider();
+      registerMgtComponents();
+
+      // When the user is signed in, we modify the visibility of some elements and load some data from Microsoft Graph
+      Providers.onProviderUpdated(() => {
+        if (Providers.globalProvider.state === ProviderState.SignedIn) {
+          document.getElementById("isSignedIn").style.display = "grid";
+          document.getElementById("isNotSignedIn").style.display = "none";
+        }
+
+      });
+
+      const searchBox = document.querySelector('mgt-search-box');
+      const searchResults = document.querySelector('mgt-search-results');
+      searchBox.addEventListener('searchTermChanged', (e) => {
+        console.log(e.detail);
+        searchResults.queryString = e.detail;
+      });      
+
+    </script>
+    <style>
+      #isSignedIn {
+        display: none;
+      }
+
+      .example {
+        font-family: "Segoe UI", "Segoe UI Web (West European)", "Segoe UI",
+          -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue",
+          sans-serif;
+        margin-bottom: 8px;
+      }
+
+      .example .title {
+        border-bottom: 1px solid #8a8886;
+        margin-bottom: 8px;
+        width: fit-content;
+      }
+
+    </style>
+  </head>
+  <body>
+    <title>Using the mgt-person component</title>
+    <mgt-msal2-provider
+      client-id="%YOUR_CLIENT_ID%"
+      scopes="User.Read, User.ReadBasic.All, User.Read.All, Mail.ReadBasic, Sites.Read.All, People.Read.All, People.Read, Contacts.Read, Presence.Read"
+      login-type="popup"
+    >
+    </mgt-msal2-provider>
+
+    <mgt-login></mgt-login>
+
+    <div id="isSignedIn">
+      <div class="example">
+        <div class="title">
+          Simple search-box - search-results integration
+        </div>
+        <mgt-search-box></mgt-search-box>
+        <mgt-search-results entity-types="driveItem" fetch-thumbnail="true">
+        </mgt-search-results>
+      </div>
+    </div>
+
+    <div id="isNotSignedIn">
+      It seems you are not connected. Please sign in using the mgt-login
+      component!
+    </div>
+
+  </body>
+</html>

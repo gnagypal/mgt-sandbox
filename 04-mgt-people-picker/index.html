@@ -92,6 +92,14 @@
         </div>
         <mgt-people-picker placeholder="Find your best colleague!" selection-mode="single"></mgt-people-picker>
       </div>
+     
+
+      <div class="example">
+        <div class="title">
+          Simple people picker component for contacts
+        </div>
+        <mgt-people-picker type="person" user-type="users"></mgt-people-picker>
+      </div>      
 
       <div class="example">
         <div class="title">
@@ -142,6 +150,17 @@
         </div>
         <mgt-people-picker allow-any-email="true"></mgt-people-picker>
       </div>
+    
+      <div class="example">
+        <div class="title">
+          People picker component with error template
+        </div>
+        <mgt-people-picker>
+          <template data-type="error">
+            <p>Sorry, no people were found</p>
+          </template>
+        </mgt-people-picker>
+      </div>    
     </div>
 
     <div id="isNotSignedIn">

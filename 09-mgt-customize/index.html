@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
   <head>
     <script type="module">
@@ -13,48 +12,54 @@
       } from "https://unpkg.com/@microsoft/mgt@4";
 
       // 2
-    /* https://docs.microsoft.com/en-us/graph/toolkit/customize-components/localization */
+      /* https://docs.microsoft.com/en-us/graph/toolkit/customize-components/localization */
       LocalizationHelper.strings = {
+        noResultsFound: "لم نجد أي قنوات",
         _components: {
-          'person-card': {
-            sendEmailLinkSubtitle: 'Envoyer un courriel',
-            startChatLinkSubtitle: 'Discuter',
-            showMoreSectionButton: 'Voir plus'
+          "login": {
+            signInLinkSubtitle: "login",
+            signOutLinkSubtitle: "خروج",
           },
-          'person-card-contact': {
-            contactSectionTitle: 'Information'
+          "people-picker": {
+            inputPlaceholderText: "ابدأ في كتابة الاسم",
+            noResultsFound: "لم نجد أي قنوات", // will overwrite globally defined noResultsFound in people-picker component
+            loadingMessage: "...جار التحميل",
           },
-          'person-card-organization': {
-            reportsToSectionTitle: 'Gestionnaire',
-            organizationSectionTitle: 'Organigramme',
-            youWorkWithSubSectionTitle: 'Collègues',
+          "teams-channel-picker": {
+            inputPlaceholderText: "حدد قناة",
+            noResultsFound: "local NoResultsFound Example",
+            // loadingMessage: is default string "Loading..." for this example since not defined globally or locally
           },
-          'person-card-messages': {
-            emailsSectionTitle: 'Courriels'
+          "tasks": {
+            removeTaskSubtitle: "delete",
+            cancelNewTaskSubtitle: "canceltest",
+            newTaskPlaceholder: "newTaskTest",
+            addTaskButtonSubtitle: "addme",
           },
-          'person-card-files': {
-            filesSectionTitle: 'Fichiers',
-            sharedTextSubtitle: 'Partagé'
+          "person-card": {
+            sendEmailLinkSubtitle: "ارسل بريد الكتروني",
+            startChatLinkSubtitle: "ابدأ الدردشة",
+            showExpandedDetailsButton: 'Show expanded details',
+            showMoreSectionButton: "أظهر المزيد", // global declaration
           },
-          'person-card-profile': {
-            SkillsAndExperienceSectionTitle: 'Expérience et habiletés',
-            AboutCompactSectionTitle: 'À propos',
-            SkillsSubSectionTitle: 'Habiletés',
-            LanguagesSubSectionTitle: 'Langues',
-            WorkExperienceSubSectionTitle: 'Expérience',
-            EducationSubSectionTitle: 'Éducation',
-            professionalInterestsSubSectionTitle: 'Intérêts professionels',
-            personalInterestsSubSectionTitle: 'Intérêts personnels',
-            birthdaySubSectionTitle: 'Anniversaire',
-            currentYearSubtitle: 'En cours'
-          }
-        }
-      };   
-      
+          "person-card-contact": {
+            contactSectionTitle: "اتصل",
+          },
+          "person-card-organization": {
+            reportsToSectionTitle: "تقارير ل",
+            directReportsSectionTitle: "تقارير مباشرة",
+            organizationSectionTitle: "منظمة",
+            youWorkWithSubSectionTitle: "انت تعمل مع",
+            userWorksWithSubSectionTitle: "يعمل مع",
+          },
+        },
+      };      
       // 3
       /* https://docs.microsoft.com/en-us/graph/toolkit/customize-components/cache */
-      CacheService.config.isEnabled = false;
+      
+      CacheService.config.isEnabled = true;
       CacheService.config.defaultInvalidationPeriod = 60000;
+
       CacheService.config.people.isEnabled = true;
       CacheService.config.people.invalidationPeriod = 1000;              
 
@@ -82,11 +87,6 @@
       fluent-tab-panel {
         padding-top: 16px;
       }
-
-      .mgt-dark {
-        --background-color: #1F1F1F;
-        background-color: var(--background-color);
-      }
     </style>
   </head>
   <body>
@@ -97,10 +97,10 @@
       login-type="popup"
     >
     </mgt-msal2-provider>
-    
+
     <mgt-login></mgt-login>
-    
-    <fluent-switch id="luminance">Dark Mode</fluent-switch>
+
+    <mgt-theme-toggle></mgt-theme-toggle>
     <fluent-switch id="rtl">Right-to-left</fluent-switch>
 
     <div id="isSignedIn">   
@@ -111,13 +111,12 @@
         <fluent-tab-panel id="mgt-styling-panel">
           <style>
             /* https://docs.microsoft.com/en-us/graph/toolkit/components/person#css-custom-properties */
-            mgt-person {
-              /*--avatar-size: 72px;
-              --avatar-border-radius: 0%;*/
+            .person {
+               --person-avatar-size: 172px;
+               --person-avatar-border-radius: 0%;
             }
           </style>
-
-          <mgt-person person-query="me" view="threelines"></mgt-person>
+          <mgt-person class="person"  person-query="me" view="threelines"></mgt-person>
         </fluent-tab-panel>
         <fluent-tab-panel id="mgt-caching-panel">
           
@@ -126,16 +125,11 @@
           <script>
           </script>
         </fluent-tab-panel>
-        <fluent-tab-panel id="mgt-caching-panel">
-          
-          <mgt-person person-query="me" person-card="hover"></mgt-person>
-
-          <script>
-  
-          </script>
+        <fluent-tab-panel id="mgt-localization-panel">
+            <mgt-person person-query="me" person-card="hover"></mgt-person> 
+            <mgt-people-picker show-max="4"> </mgt-people-picker>
         </fluent-tab-panel>
       </fluent-tabs>   
-      
     </div>
 
     <div id="isNotSignedIn">
@@ -145,36 +139,15 @@
 
     <script type="module">
       import {
-        accentPalette,
-        baseLayerLuminance,
-        PaletteRGB,
-        StandardLuminance,
-        SwatchRGB,
-        Switch,
+        Switch
       } from "https://unpkg.com/@fluentui/web-components";
-      import { parseColorHexRGB } from 'https://unpkg.com/@microsoft/fast-colors';
-
-      var luminanceSwitch = document.getElementById("luminance");
-      var rtlSwitch = document.getElementById("rtl");
       
-      /* https://docs.microsoft.com/en-us/graph/toolkit/customize-components/style#apply-themes */
-      luminanceSwitch.addEventListener('change', () => {
-        baseLayerLuminance.setValueFor(
-          document.getElementsByTagName('body')[0],
-          !luminanceSwitch.checked
-            ? StandardLuminance.LightMode
-            : StandardLuminance.DarkMode
-        );
-
-        document.getElementsByTagName('body')[0].className = luminanceSwitch.checked ? "mgt-dark" : "mgt-light";
-      });
+      var rtlSwitch = document.getElementById("rtl");
       
       /* https://docs.microsoft.com/en-us/graph/toolkit/customize-components/right-to-left */
       rtlSwitch.addEventListener('change', () => { 
         document.getElementsByTagName('body')[0].style.direction = rtlSwitch.checked ? 'rtl' : '';
       })
-    </script>
-    <script>
     </script>
   </body>
 </html>
